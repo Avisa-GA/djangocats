@@ -17,14 +17,17 @@ from django.urls import reverse
 
 from django.http import HttpResponseRedirect
 
+from django.contrib.auth.models import User
 # import models
-from .models import Cat
+from .models import Cat, CatToy
 
 # Create your views here.
 class Home(TemplateView):
    template_name = 'home.html'
 
 
+class About(TemplateView):
+    template_name = 'about.html'
 
 class CatList(TemplateView):
     template_name = "catlist.html"
@@ -46,7 +49,7 @@ class CatList(TemplateView):
 # main_app/views.py
 class Cat_Create(CreateView):
    model = Cat
-   fields = ['name', 'img', 'age', 'gender', 'user']
+   fields = ['name', 'img', 'age', 'gender', 'user', 'cattoys']
    template_name = "cat_create.html"
     # success_url = "/cats/"
 
@@ -66,7 +69,7 @@ class CatDetail(DetailView):
 
 class CatUpdate(UpdateView):
     model = Cat
-    fields = ['name', 'img', 'age', 'gender']
+    fields = ['name', 'img', 'age', 'gender', 'cattoys']
     template_name = "cat_update.html"
     # success_url = "/cats"
     def get_success_url(self):
@@ -77,3 +80,38 @@ class CatDelete(DeleteView):
     model = Cat
     template_name = "cat_delete_confirmation.html"
     success_url = "/cats/"
+
+
+
+
+def profile(request, username):
+    user = User.objects.get(username=username)
+    cats = Cat.objects.filter(user=user)
+    return render(request, 'profile.html', {'username': username, 'cats': cats})
+
+
+
+def cattoys_index(request):
+    cattoys = CatToy.objects.all()
+    return render(request, 'cattoy_index.html', {'cattoys': cattoys})
+
+def cattoys_show(request, cattoy_id):
+    cattoy = CatToy.objects.get(id=cattoy_id)
+    return render(request, 'cattoy_show.html', {'cattoy': cattoy})
+
+class CatToyCreate(CreateView):
+    model = CatToy
+    fields = '__all__'
+    template_name = "cattoy_form.html"
+    success_url = '/cattoys'
+
+class CatToyUpdate(UpdateView):
+    model = CatToy
+    fields = ['name', 'color']
+    template_name = "cattoy_update.html"
+    success_url = '/cattoys'
+
+class CatToyDelete(DeleteView):
+    model = CatToy
+    template_name = "cattoy_confirm_delete.html"
+    success_url = '/cattoys'

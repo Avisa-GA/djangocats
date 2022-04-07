@@ -1,24 +1,28 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block content %}
-
 <div>
-  <img src="{{cat.img}}" alt="{{cat.name}}" />
-</div>
-    <h1>{{cat.name}}</h1>
+    <img src="{{cat.img}}" alt="picture of {{cat.name}}"/>
 </div>
 <div>
+    <h3>Name: {{ cat.name }}</h3>
     <h3>Age: {{cat.age}}</h3>
     <h3>Gender: {{cat.gender}}</h3>
-</div>
-<div>
-    <a href=""></a>
-    <a href=""></a>
+    <p>Adopted by:
+        <a href="/user/{{ cat.user.username }}">{{ cat.user.username }}</a>
+    </p>
+
+    <h3>Toys owned:</h3>
+    {% for cattoy in cat.cattoys.all %}
+        <div>{{ cattoy.name }}</div>
+    {% empty %}
+        <div> Cat has no toys 🙁</div>
+    {% endfor %}
 </div>
 
 <div>
     <a href="{% url 'cat_update' cat.pk %}">Update</a>
-    <a href="{% url 'cat_delete' cat.pk %}">Delete</a>
+    <a href="{% url 'cat_delete_confirmation' cat.pk %}">Delete</a>
 </div>
 
 {% endblock %}
